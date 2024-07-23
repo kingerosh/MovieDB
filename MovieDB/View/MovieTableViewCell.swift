@@ -45,15 +45,21 @@ class MovieTableViewCell: UITableViewCell {
         stackView.addArrangedSubview(movieImage)
         stackView.addArrangedSubview(movieTitle)
         
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
-            movieImage.heightAnchor.constraint(equalToConstant: 460)
-            
-        
-        ])
+//        NSLayoutConstraint.activate([
+//            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+//            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
+//            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+//            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+//            movieImage.heightAnchor.constraint(equalToConstant: 460)
+//            
+//        
+//        ])
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(33)
+        }
+        movieImage.snp.makeConstraints { make in
+            make.height.equalTo(460)
+        }
         
     }
     

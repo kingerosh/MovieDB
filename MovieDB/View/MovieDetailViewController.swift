@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class MovieDetailViewController: UIViewController {
     
@@ -44,15 +45,24 @@ class MovieDetailViewController: UIViewController {
     func setupUI() {
         view.addSubview(movieImage)
         view.addSubview(movieTitle)
-        NSLayoutConstraint.activate([
-            movieImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
-            movieImage.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
-            movieImage.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
-            movieTitle.topAnchor.constraint(equalTo: movieImage.bottomAnchor, constant: 10),
-            movieTitle.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            movieTitle.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            movieImage.heightAnchor.constraint(equalToConstant: 460)
-        ])
+//        NSLayoutConstraint.activate([
+//            movieImage.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
+//            movieImage.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+//            movieImage.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
+//            movieTitle.topAnchor.constraint(equalTo: movieImage.bottomAnchor, constant: 10),
+//            movieTitle.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+//            movieTitle.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+//            movieImage.heightAnchor.constraint(equalToConstant: 460)
+//        ])
+        movieImage.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(15)
+            make.centerX.equalTo(view.safeAreaLayoutGuide.snp.centerX)
+        }
+        movieTitle.snp.makeConstraints { make in
+            make.top.equalTo(movieImage.snp.bottom).offset(10)
+            make.centerX.equalTo(view.safeAreaLayoutGuide.snp.centerX)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
     }
     
 
