@@ -89,6 +89,9 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         movieDetailViewController.movieID = movieID
         navigationController?.pushViewController(movieDetailViewController, animated: true)
     }
+    
 }
+
+
 
 
