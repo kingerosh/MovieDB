@@ -49,6 +49,7 @@ class MovieTableViewCell: UITableViewCell {
     }
     
     private var movie: Result?
+    var method: (()->Void)? = nil
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -103,8 +104,10 @@ class MovieTableViewCell: UITableViewCell {
         } else {
             saveFavorite(movie: movie)
         }
-        
         isFavorite.toggle()
+        if let method {
+            method()
+        }
     }
     
     func saveFavorite(movie: Result) {

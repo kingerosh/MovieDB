@@ -38,6 +38,10 @@ class ViewController: UIViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.movieTableView.reloadData()
+    }
+    
     func setupUI() {
         view.addSubview(movieLabel)
         view.addSubview(movieTableView)
