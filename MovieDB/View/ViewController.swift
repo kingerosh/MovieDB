@@ -69,17 +69,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = movieTableView.dequeueReusableCell(withIdentifier: "movie", for: indexPath) as! MovieTableViewCell
         let movie = movieData[indexPath.row]
-        cell.movieTitle.text = movie.title
-        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/"+movie.posterPath) else {return cell}
-        DispatchQueue.global().async {
-            if let data = try? Data(contentsOf: url) {
-                
-                DispatchQueue.main.async {
-                    cell.movieImage.image = UIImage(data: data)
-                    
-                }
-            }
-        }
+        cell.conf(movie: movie)
         return cell
     }
     
