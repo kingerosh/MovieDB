@@ -31,8 +31,8 @@ class NetworkManager {
     }()
     private let urlImage:String = "https://image.tmdb.org/t/p/w500/"
     
-    func loadMovie(complition: @escaping ([Result]) -> Void) {
-        urlComponent.path = "/3/movie/now_playing"
+    func loadMovie(theme:theme, complition: @escaping ([Result]) -> Void) {
+        urlComponent.path = "/3/movie/\(theme.rawValue)"
         guard let url = urlComponent.url else {return}
         let session = URLSession(configuration: .default)
         DispatchQueue.global().async {

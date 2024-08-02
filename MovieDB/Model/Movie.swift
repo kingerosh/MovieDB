@@ -15,7 +15,7 @@ import UIKit
 
 // MARK: - Movie
 struct Movie: Codable {
-    let dates: Dates
+    let dates: Dates?
     let page: Int
     let results: [Result]
     let totalPages, totalResults: Int
