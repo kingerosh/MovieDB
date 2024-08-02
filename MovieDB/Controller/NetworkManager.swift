@@ -74,4 +74,16 @@ class NetworkManager {
             }
         }
     }
+    
+    func loadCasts(movieID: Int, complition: @escaping ([Cast])-> Void) {
+        urlComponent.path = "/3/movie/\(movieID)/casts"
+        guard let url = urlComponent.url else {return}
+        AF.request(url).responseDecodable(of: Casts.self) { result in
+            if let casts = try? result.result.get() {
+                DispatchQueue.main.async {
+                    complition(casts.cast)
+                }
+            }
+        }
+    }
 }

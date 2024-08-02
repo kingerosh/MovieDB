@@ -111,18 +111,41 @@ class MovieDetailViewController: UIViewController {
     }()
     
     var movieID = 0
-    var genre:[Genre] = []
-    var movieData:MovieDetail?
+    private var genre:[Genre] = []
+    private var movieData:MovieDetail?
+    private var casts:[Cast] = []
+    
+    private lazy var castLabel:UILabel = {
+        let label = UILabel()
+        label.text = "Cast"
+        label.textAlignment = .center
+        label.font = UIFont.systemFont(ofSize: 36, weight: .bold)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var castCollectionView: UICollectionView = {
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
+        collection.delegate = self
+        collection.dataSource = self
+        collection.backgroundColor = .white
+        collection.showsHorizontalScrollIndicator = false
+        collection.register(GenreCollectionViewCell.self, forCellWithReuseIdentifier: "cast")
+        collection.translatesAutoresizingMaskIntoConstraints = false
+        return collection
+    }()
+    
+    private lazy var castView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
-        NetworkManager.shared.loadMovieDetail(movieID: movieID) { movie in
-            self.movieData = movie
-            self.content()
-        }
-       
+        apiRequest()
     }
     
     func content() {
@@ -143,8 +166,12 @@ class MovieDetailViewController: UIViewController {
     func setupUI() {
         view.addSubview(scrollView)
         
-        [movieImage,movieTitle,realiseStackView,ratingStackView,overviewView].forEach {
+        [movieImage,movieTitle,realiseStackView,ratingStackView,overviewView,castView].forEach {
             scrollView.addSubview($0)
+        }
+        
+        [castLabel,castCollectionView].forEach{
+            castView.addSubview($0)
         }
         
         [overviewLabel,overviewTextLabel].forEach {
@@ -199,7 +226,7 @@ class MovieDetailViewController: UIViewController {
             make.top.equalTo(ratingStackView.snp.bottom).offset(30)
             make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
 //            make.leading.equalTo(realiseStackView.snp.leading)
-            make.leading.bottom.equalToSuperview()
+            make.leading.equalToSuperview()
 //            make.height.equalTo(304)
         }
         overviewLabel.snp.makeConstraints { make in
@@ -212,7 +239,20 @@ class MovieDetailViewController: UIViewController {
             make.bottom.equalToSuperview().offset(-30)
             make.width.equalTo(view.safeAreaLayoutGuide.snp.width).offset(-30)
         }
-        
+        castView.snp.makeConstraints { make in
+            make.top.equalTo(overviewView.snp.bottom).offset(10)
+            make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing)
+            make.leading.bottom.equalToSuperview()
+        }
+        castLabel.snp.makeConstraints { make in
+            make.top.equalTo(castView.snp.top)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+        }
+        castCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(castLabel.snp.bottom)
+            make.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalTo(castView.snp.bottom)
+        }
 
     }
     
@@ -223,6 +263,17 @@ class MovieDetailViewController: UIViewController {
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 10
         return layout
+    }
+    
+    private func apiRequest() {
+        NetworkManager.shared.loadMovieDetail(movieID: movieID) { movie in
+            self.movieData = movie
+            self.content()
+        }
+        NetworkManager.shared.loadCasts(movieID: movieID) { cast in
+            self.casts = cast
+            self.castCollectionView.reloadData()
+        }
     }
     
     private func setStar(rating: Double) {
@@ -259,24 +310,49 @@ class MovieDetailViewController: UIViewController {
 }
 extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        genre.count
+        if collectionView == castCollectionView {
+            casts.count
+        } else {
+            genre.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = genreCollectionView.dequeueReusableCell(withReuseIdentifier: "genre", for: indexPath) as! GenreCollectionViewCell
-        let genre = genre[indexPath.row].name
-        cell.label.text = genre
-        return cell
+        if collectionView == castCollectionView {
+            let cell = castCollectionView.dequeueReusableCell(withReuseIdentifier: "genre", for: indexPath) as! CastCollectionViewCell
+            let cast = casts[indexPath.row]
+            cell.conf(cast: cast)
+            return cell
+        } else {
+            let cell = genreCollectionView.dequeueReusableCell(withReuseIdentifier: "genre", for: indexPath) as! GenreCollectionViewCell
+            let genre = genre[indexPath.row].name
+            cell.label.text = genre
+            return cell
+        }
     }
     
     
 }
 extension MovieDetailViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let label = UILabel()
-        let genre = genre[indexPath.row].name
-        label.text = genre
-        label.sizeToFit()
-        return CGSize(width: label.frame.width + 20, height: 30)
+        if collectionView == genreCollectionView {
+            let label = UILabel()
+            let genre = genre[indexPath.row].name
+            label.text = genre
+            label.sizeToFit()
+            return CGSize(width: label.frame.width + 20, height: 30)
+        } else {
+            let cast = casts[indexPath.row]
+            let nameLabel = UILabel()
+            let roleLabel = UILabel()
+            nameLabel.text = cast.name
+            roleLabel.text = cast.character
+            nameLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+            roleLabel.font = UIFont.systemFont(ofSize: 12, weight: .light)
+            nameLabel.sizeToFit()
+            roleLabel.sizeToFit()
+            let maxWidth = max(nameLabel.frame.width, roleLabel.frame.width) + 130
+            return CGSize(width: maxWidth, height: 120)
+        }
     }
 }
