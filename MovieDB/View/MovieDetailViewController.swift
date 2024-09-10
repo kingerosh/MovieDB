@@ -130,7 +130,7 @@ class MovieDetailViewController: UIViewController {
         collection.dataSource = self
         collection.backgroundColor = .white
         collection.showsHorizontalScrollIndicator = false
-        collection.register(GenreCollectionViewCell.self, forCellWithReuseIdentifier: "cast")
+        collection.register(CastCollectionViewCell.self, forCellWithReuseIdentifier: "cast")
         collection.translatesAutoresizingMaskIntoConstraints = false
         return collection
     }()
@@ -318,7 +318,9 @@ extension MovieDetailViewController: UICollectionViewDelegate, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        print("hi")
         if collectionView == castCollectionView {
+            print("hi-2")
             let cell = castCollectionView.dequeueReusableCell(withReuseIdentifier: "genre", for: indexPath) as! CastCollectionViewCell
             let cast = casts[indexPath.row]
             cell.conf(cast: cast)

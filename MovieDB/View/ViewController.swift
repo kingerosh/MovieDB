@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     lazy var movieLabel: UILabel = {
         let label = UILabel()
         label.text = "MovieDB"
+        label.alpha = 0
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 36, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -20,6 +21,7 @@ class ViewController: UIViewController {
     }()
     lazy var themeLabel: UILabel = {
         let label = UILabel()
+        label.alpha = 0
         label.text = "Theme"
         label.font = UIFont.systemFont(ofSize: 15, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -27,6 +29,7 @@ class ViewController: UIViewController {
     }()
     lazy var movieTableView: UITableView = {
         let table = UITableView()
+        table.alpha = 0
         table.separatorStyle = .none
         table.dataSource = self
         table.delegate = self
@@ -51,6 +54,7 @@ class ViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collection.delegate = self
         collection.dataSource = self
+        collection.alpha = 0
         collection.backgroundColor = .white
         collection.showsHorizontalScrollIndicator = false
         collection.register(ThemeCollectionViewCell.self, forCellWithReuseIdentifier: "theme")
@@ -70,11 +74,17 @@ class ViewController: UIViewController {
         view.backgroundColor = .white
         setupUI()
         apiRequest()
-        
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         self.movieTableView.reloadData()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        animateLabel()
     }
     
     func setupUI() {
@@ -84,7 +94,7 @@ class ViewController: UIViewController {
         view.addSubview(movieTableView)
         
         movieLabel.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            make.centerX.centerY.equalTo(view.safeAreaLayoutGuide)
         }
         themeLabel.snp.makeConstraints { make in
             make.trailing.equalTo(view.safeAreaLayoutGuide)
@@ -109,6 +119,30 @@ class ViewController: UIViewController {
         NetworkManager.shared.loadMovie(theme: theme) { result in
             self.movieData = result
             self.movieTableView.reloadData()
+        }
+    }
+    
+    func animateLabel() {
+        UIView.animate(withDuration: 1) {
+            self.movieLabel.alpha = 1
+        } completion: { _ in
+            UIView.animate(withDuration: 0.7) {
+                self.movieLabel.transform = CGAffineTransform(scaleX: 1.5, y: 1.5)
+            } completion: { _ in
+                UIView.animate(withDuration: 1, delay: 0.1, usingSpringWithDamping: 0.7, initialSpringVelocity: 1, animations: {
+                    self.movieLabel.snp.remakeConstraints { make in
+                        make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
+                        make.centerX.equalTo(self.view.safeAreaLayoutGuide)
+                    }
+                    self.view.layoutIfNeeded()
+                    self.movieLabel.transform = CGAffineTransform(scaleX: 1, y: 1)
+                }) { _ in
+                    self.themeLabel.alpha = 1
+                    self.themeCollectionView.alpha = 1
+                    self.movieTableView.alpha = 1
+                    
+                }
+            }
         }
     }
 
